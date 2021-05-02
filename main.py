@@ -6,8 +6,7 @@ from secrets import api_key
 def main(api_key):
     request_url = create_url(api_key)
     res = download_zip(request_url)
-    # TODO process contents of htm folder
-    # TODO upload to s3
+    # TODO transfer contents to s3
     return res
 
 
