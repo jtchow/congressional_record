@@ -1,3 +1,4 @@
+import os
 import boto3
 import requests
 import zipfile
@@ -7,11 +8,11 @@ from secrets import api_key, aws_access_key_id, aws_secret_access_key, bucket_na
 
 def main(api_key):
     request_url = create_url(api_key)
-    download_file_name = create_file_name(request_url)
-    download_zip(request_url, download_file_name)
-    unzip_download(download_file_name)
-    # todo convert html files to txt files?
-    # transfer_to_s3(download_file_name)
+    folder_name = get_folder_name(request_url)
+    download_zip(request_url, folder_name)
+    unzip_download(folder_name)
+    convert_html_to_txt(folder_name)
+    transfer_to_s3(folder_name)
     # todo delete local files
     return
 
@@ -22,7 +23,7 @@ def create_url(api_key):
     return request_url
 
 
-def create_file_name(request_url):
+def get_folder_name(request_url):
     filename = request_url.split('/')[-2]
     return filename
 
@@ -41,6 +42,14 @@ def unzip_download(download_file_name):
     zip_file_name = download_file_name + '.zip'
     with zipfile.ZipFile(zip_file_name, 'r') as zipped:
         zipped.extractall('.')
+
+
+def convert_html_to_txt(folder_name):
+    html_folder_path = os.path.join(folder_name, 'html')
+    for file in os.listdir(html_folder_path):
+        original_file_path = os.path.join(html_folder_path, file)
+        new_file_path = os.path.join(html_folder_path, file.split('.')[0] + '.txt')
+        os.rename(original_file_path, new_file_path)
 
 
 def transfer_to_s3(parent_folder):
