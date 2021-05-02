@@ -1,14 +1,15 @@
 import boto3
 import requests
 from datetime import datetime
-from secrets import api_key, aws_access_key_id, aws_secret_access_key
+from secrets import api_key, aws_access_key_id, aws_secret_access_key, bucket_name
 
 
 def main(api_key):
     request_url = create_url(api_key)
-    res = download_zip(request_url)
-    # TODO transfer contents to s3
-    return res
+    download_file_name = create_file_name(request_url)
+    download_zip(request_url, download_file_name)
+    transfer_to_s3(download_file_name)
+    return
 
 
 def create_url(api_key):
@@ -17,10 +18,10 @@ def create_url(api_key):
     return request_url
 
 
-def download_zip(request_url):
-    local_file_name = create_file_name(request_url)
+def download_zip(request_url, download_file_name):
     res = requests.get(request_url, stream=True)
-    with open(local_file_name, 'wb') as local_file:
+    # TODO some kind of error handling
+    with open(download_file_name, 'wb') as local_file:
         for chunk in res.iter_content(chunk_size=128):
             local_file.write(chunk)
     return res
@@ -32,10 +33,10 @@ def create_file_name(request_url):
     return filename
 
 
-def transfer_to_s3(data):
+def transfer_to_s3(filename):
+    # TODO error handling
     s3 = get_s3_connection()
-    # TODO get bucket
-    # TODO put data in bucket
+    s3.Bucket(bucket_name).upload_file(filename, filename)
 
 
 def get_s3_connection():
