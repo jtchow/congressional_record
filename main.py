@@ -11,7 +11,7 @@ def main(api_key):
     download_zip(request_url, download_file_name)
     unzip_download(download_file_name)
     # transfer_to_s3(download_file_name)
-    # todo delete local file
+    # todo delete local files
     return
 
 
@@ -23,21 +23,22 @@ def create_url(api_key):
 
 def create_file_name(request_url):
     filename = request_url.split('/')[-2]
-    filename = filename + '.zip'
     return filename
 
 
 def download_zip(request_url, download_file_name):
     res = requests.get(request_url, stream=True)
     # TODO some kind of error handling
-    with open(download_file_name, 'wb') as local_file:
+    zip_file_name = download_file_name + '.zip'
+    with open(zip_file_name, 'wb') as local_file:
         for chunk in res.iter_content(chunk_size=128):
             local_file.write(chunk)
     return res
 
 
 def unzip_download(download_file_name):
-    with zipfile.ZipFile(download_file_name, 'r') as zipped:
+    zip_file_name = download_file_name + '.zip'
+    with zipfile.ZipFile(zip_file_name, 'r') as zipped:
         zipped.extractall('.')
 
 
