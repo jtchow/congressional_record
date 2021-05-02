@@ -1,6 +1,7 @@
+import boto3
 import requests
 from datetime import datetime
-from secrets import api_key
+from secrets import api_key, aws_access_key_id, aws_secret_access_key
 
 
 def main(api_key):
@@ -29,6 +30,21 @@ def create_file_name(request_url):
     filename = request_url.split('/')[-2]
     filename = filename + '.zip'
     return filename
+
+
+def transfer_to_s3(data):
+    s3 = get_s3_connection()
+    # TODO get bucket
+    # TODO put data in bucket
+
+
+def get_s3_connection():
+    session = boto3.Session(
+        aws_access_key_id=aws_access_key_id,
+        aws_secret_access_key=aws_secret_access_key
+    )
+    s3 = session.resource('s3')
+    return s3
 
 
 if __name__ == "__main__":
