@@ -6,14 +6,13 @@ from secrets import api_key
 def main(api_key):
     request_url = create_url(api_key)
     res = download_zip(request_url)
-    # where do i put the zip? can i even pick
-    # process contents of htm folder
-    # upload to s3?
+    # TODO process contents of htm folder
+    # TODO upload to s3
     return res
 
 
 def create_url(api_key):
-    todays_date = datetime.today().strftime('%Y-%m-%d')
+    todays_date = datetime.today().strftime('%Y-04-28')
     request_url = f'https://api.govinfo.gov/packages/CREC-{todays_date}/zip?api_key={api_key}'
     return request_url
 
@@ -29,6 +28,7 @@ def download_zip(request_url):
 
 def create_file_name(request_url):
     filename = request_url.split('/')[-2]
+    filename = filename + '.zip'
     return filename
 
 
