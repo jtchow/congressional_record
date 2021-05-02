@@ -10,6 +10,7 @@ def main(api_key):
     download_file_name = create_file_name(request_url)
     download_zip(request_url, download_file_name)
     unzip_download(download_file_name)
+    # todo convert html files to txt files?
     # transfer_to_s3(download_file_name)
     # todo delete local files
     return
@@ -42,8 +43,9 @@ def unzip_download(download_file_name):
         zipped.extractall('.')
 
 
-def transfer_to_s3(filename):
+def transfer_to_s3(parent_folder):
     # TODO error handling
+    # todo go into parentfolder/html and for each file in there, upload to s3 with the prefix of parent folder
     s3 = get_s3_connection()
     s3.Bucket(bucket_name).upload_file(filename, filename)
 
