@@ -4,23 +4,33 @@ from secrets import api_key
 
 
 def main(api_key):
-    download_zip(api_key)
+    request_url = create_url(api_key)
+    res = download_zip(request_url)
     # where do i put the zip? can i even pick
     # process contents of htm folder
     # upload to s3?
-
-
-def download_zip(api_key):
-    request_url = create_url(api_key)
-    res = requests.get(request_url)
-    return res.json()
+    return res
 
 
 def create_url(api_key):
     todays_date = datetime.today().strftime('%Y-%m-%d')
-    request_url = f'https://api.govinfo.gov/CREC-{todays_date}/zip?api_key={api_key}'
+    request_url = f'https://api.govinfo.gov/packages/CREC-{todays_date}/zip?api_key={api_key}'
     return request_url
 
 
+def download_zip(request_url):
+    local_file_name = create_file_name(request_url)
+    res = requests.get(request_url, stream=True)
+    with open(local_file_name, 'wb') as local_file:
+        for chunk in res.iter_content(chunk_size=128):
+            local_file.write(chunk)
+    return res
+
+
+def create_file_name(request_url):
+    filename = request_url.split('/')[-2]
+    return filename
+
+
 if __name__ == "__main__":
-    blah = download_zip(api_key)
+    blah = main(api_key)
