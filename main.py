@@ -1,6 +1,7 @@
 import os
 import boto3
 import requests
+import shutil
 import zipfile
 from datetime import datetime
 from secrets import api_key, aws_access_key_id, aws_secret_access_key, bucket_name
@@ -13,7 +14,7 @@ def main(api_key):
     unzip_download(folder_name)
     convert_html_to_txt(folder_name)
     transfer_to_s3(folder_name)
-    # todo delete local files
+    delete_local_files(folder_name)
     return
 
 
@@ -47,14 +48,14 @@ def unzip_download(download_file_name):
 def convert_html_to_txt(folder_name):
     html_folder_path = os.path.join(folder_name, 'html')
     txt_file_path = os.path.join(folder_name, 'txt')
-    os.mkdir(txt_file_path)
-    for file in os.listdir(html_folder_path):
-        try:
+    try:
+        os.mkdir(txt_file_path)
+        for file in os.listdir(html_folder_path):
             original_file_path = os.path.join(html_folder_path, file)
             new_file_path = os.path.join(txt_file_path, file.split('.')[0] + '.txt')
             os.rename(original_file_path, new_file_path)
-        except FileExistsError:
-            continue
+    except FileExistsError:
+            pass
 
 
 def transfer_to_s3(parent_folder):
@@ -75,6 +76,15 @@ def get_s3_connection():
     )
     s3 = session.resource('s3')
     return s3
+
+
+def delete_local_files(folder_name):
+    try:
+        shutil.rmtree(folder_name)
+        os.remove(f'{folder_name}.zip')
+    except FileNotFoundError:
+        print(f"Couldn't delete {folder_name}")
+        pass
 
 
 if __name__ == "__main__":
