@@ -18,7 +18,7 @@ def main(api_key):
 
 
 def create_url(api_key):
-    todays_date = datetime.today().strftime('%Y-04-28')
+    todays_date = datetime.today().strftime('%Y-04-30')
     request_url = f'https://api.govinfo.gov/packages/CREC-{todays_date}/zip?api_key={api_key}'
     return request_url
 
@@ -46,17 +46,26 @@ def unzip_download(download_file_name):
 
 def convert_html_to_txt(folder_name):
     html_folder_path = os.path.join(folder_name, 'html')
+    txt_file_path = os.path.join(folder_name, 'txt')
+    os.mkdir(txt_file_path)
     for file in os.listdir(html_folder_path):
-        original_file_path = os.path.join(html_folder_path, file)
-        new_file_path = os.path.join(html_folder_path, file.split('.')[0] + '.txt')
-        os.rename(original_file_path, new_file_path)
+        try:
+            original_file_path = os.path.join(html_folder_path, file)
+            new_file_path = os.path.join(txt_file_path, file.split('.')[0] + '.txt')
+            os.rename(original_file_path, new_file_path)
+        except FileExistsError:
+            continue
 
 
 def transfer_to_s3(parent_folder):
     # TODO error handling
     # todo go into parentfolder/html and for each file in there, upload to s3 with the prefix of parent folder
     s3 = get_s3_connection()
-    s3.Bucket(bucket_name).upload_file(filename, filename)
+    txt_file_path = os.path.join(parent_folder, 'txt')
+    for filename in os.listdir(txt_file_path):
+        file_path = os.path.join(txt_file_path, filename)
+        print(f'Uploading {filename}')
+        s3.Bucket(bucket_name).upload_file(file_path, f'{parent_folder}/{filename}')
 
 
 def get_s3_connection():
