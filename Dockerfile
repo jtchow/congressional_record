@@ -1,4 +1,4 @@
-from python:3
+from python:3.7
 
 WORKDIR /job
 COPY . .
