@@ -4,7 +4,7 @@ import requests
 import logging
 import shutil
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from secrets import api_key, aws_access_key_id, aws_secret_access_key, bucket_name
 
 
@@ -24,8 +24,9 @@ def main(api_key):
 
 
 def create_url(api_key):
-    todays_date = datetime.today().strftime('%Y-%m-%d')
-    request_url = f'https://api.govinfo.gov/packages/CREC-{todays_date}/zip?api_key={api_key}'
+    yesterday = datetime.today() - timedelta(days=1)
+    yesterdays_date = yesterday.strftime('%Y-%m-%d')
+    request_url = f'https://api.govinfo.gov/packages/CREC-{yesterdays_date}/zip?api_key={api_key}'
     print(f'trying to hit {request_url}')
     return request_url
 
