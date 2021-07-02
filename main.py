@@ -24,7 +24,7 @@ def main(api_key):
 
 
 def create_url(api_key):
-    yesterday = datetime.today() - timedelta(days=1)
+    yesterday = datetime.today() - timedelta(days=2)
     yesterdays_date = yesterday.strftime('%Y-%m-%d')
     request_url = f'https://api.govinfo.gov/packages/CREC-{yesterdays_date}/zip?api_key={api_key}'
     print(f'trying to hit {request_url}')
