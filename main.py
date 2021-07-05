@@ -1,7 +1,6 @@
 import os
 import boto3
 import requests
-import logging
 import shutil
 import zipfile
 from datetime import datetime, timedelta
@@ -16,6 +15,7 @@ def main(api_key):
         download_zip(res, folder_name)
         unzip_download(folder_name)
         convert_html_to_txt(folder_name)
+        # todo: process_txt_files(somethin)
         transfer_to_s3(folder_name)
         delete_local_files(folder_name)
     else:
