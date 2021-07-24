@@ -74,7 +74,6 @@ def convert_html_to_txt(folder_name):
 
 def transfer_to_s3(parent_folder):
     # TODO error handling
-    # todo go into parentfolder/html and for each file in there, upload to s3 with the prefix of parent folder
     s3 = get_s3_connection()
     print('created s3 connection')
     txt_file_path = os.path.join(parent_folder, 'txt')
