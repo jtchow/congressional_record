@@ -105,4 +105,4 @@ def delete_local_files(folder_name):
 
 
 if __name__ == "__main__":
-    blah = main(api_key )
+    main(api_key)
